@@ -20,6 +20,32 @@ func HealthCheckerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// LoginHandler validates the user credentials
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "session.id")
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, "Please pass the data as URL form encoded", http.StatusBadRequest)
+		return
+	}
+
+	username := r.PostForm.Get("username")
+	password := r.PostForm.Get("password")
+	if originalPassword, ok := users[username]; ok {
+		if password == originalPassword {
+			session.Values["authenticated"] = true
+			session.Save(r, w)
+		} else {
+			http.Error(w, "Invalid Credentials", http.StatusUnauthorized)
+			return
+		}
+	} else {
+		http.Error(w, "User is not found!", http.StatusNotFound)
+		return
+	}
+	w.Write([]byte("Logged in successfully"))
+}
+
 func main() {
 
 }
