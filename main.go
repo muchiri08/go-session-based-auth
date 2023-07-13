@@ -46,6 +46,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Logged in successfully"))
 }
 
+// LogoutHandler removes the session
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "session.id")
+	session.Values["authenticated"] = false
+	session.Save(r, w)
+	w.Write([]byte(""))
+}
+
 func main() {
 
 }
